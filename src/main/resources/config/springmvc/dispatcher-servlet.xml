@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--使用注解的方式配置控制器映射器和控制器的适配器-->
+   <mvc:annotation-driven></mvc:annotation-driven>
+
+    <!--是的jsp,css,js等静态资源不被拦截-->
+    <!--方式一-->
+   <!-- <mvc:resources mapping="statics/**" location="statics/"/>-->
+
+    <!--方式二-->
+    <mvc:default-servlet-handler/>
+
+  <!--  &lt;!&ndash;配置控制器的映射器&ndash;&gt;
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+
+
+    &lt;!&ndash;配置控制器的适配器&ndash;&gt;
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+-->
+
+    <!--配置一个自定义的控制器-->
+    <!--<bean name="/userList.action" class="com.love.controller.impl.UserControllerImpl"/>-->
+
+
+
+    <!--配置视图的解析器 jstl-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!--配置json解析-->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!--解析顺序-->
+        <property name="order" value="1" />
+        <property name="defaultViews">
+            <list>
+                <!-- JSON View -->
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+
+
+</beans>

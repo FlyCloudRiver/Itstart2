@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.ClassesMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Classes">
+    <id property="classesId" column="classes_id"></id>
+    <result property="classesName" column="classes_name"></result>
+    <result property="classesStarttime" column="classes_starttime"></result>
+    <result property="classesEndtime" column="classes_endtime"></result>
+    <result property="classesCapacity" column="classes_capacity"></result>
+    <result property="classesInclude" column="classes_include"></result>
+    <result property="classesStatus" column="classes_status"></result>
+    <result property="classesNumber" column="classes_number"></result>
+    <association property="staff" column="counselors_staff_id"  select="selectStaff"></association>
+    <association property="lesson" resultMap="com.love.mapper.LessonMapper.lessonMap"></association>
+    <association property="staffTeacher" column="teacher_staff_id" select="selectTeacher"></association>
+    <association property="classesType" resultMap="com.love.mapper.ClassesTypeMapper.classesTypeMap"></association>
+    <association property="classroom" resultMap="com.love.mapper.ClassroomMapper.classroomMap"></association>
+    <association property="campus" resultMap="com.love.mapper.CampusMapper.campusMap"></association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    classes_id, classes_name, classes_starttime, classes_endtime, classes_capacity, classes_include, 
+    classes_status, classes_number
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from classes
+    where classes_id = #{classesId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from classes
+    where classes_id = #{classesId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Classes">
+    insert into classes (classes_id, classes_name, classes_starttime, 
+      classes_endtime, classes_capacity, classes_include, 
+      classes_status, classes_number)
+    values (#{classesId,jdbcType=INTEGER}, #{classesName,jdbcType=VARCHAR}, #{classesStarttime,jdbcType=TIMESTAMP}, 
+      #{classesEndtime,jdbcType=TIMESTAMP}, #{classesCapacity,jdbcType=INTEGER}, #{classesInclude,jdbcType=INTEGER}, 
+      #{classesStatus,jdbcType=INTEGER}, #{classesNumber,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Classes">
+    insert into classes
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="classesId != null">
+        classes_id,
+      </if>
+      <if test="classesName != null">
+        classes_name,
+      </if>
+      <if test="classesStarttime != null">
+        classes_starttime,
+      </if>
+      <if test="classesEndtime != null">
+        classes_endtime,
+      </if>
+      <if test="classesCapacity != null">
+        classes_capacity,
+      </if>
+      <if test="classesInclude != null">
+        classes_include,
+      </if>
+      <if test="classesStatus != null">
+        classes_status,
+      </if>
+      <if test="classesNumber != null">
+        classes_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="classesId != null">
+        #{classesId,jdbcType=INTEGER},
+      </if>
+      <if test="classesName != null">
+        #{classesName,jdbcType=VARCHAR},
+      </if>
+      <if test="classesStarttime != null">
+        #{classesStarttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classesEndtime != null">
+        #{classesEndtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classesCapacity != null">
+        #{classesCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="classesInclude != null">
+        #{classesInclude,jdbcType=INTEGER},
+      </if>
+      <if test="classesStatus != null">
+        #{classesStatus,jdbcType=INTEGER},
+      </if>
+      <if test="classesNumber != null">
+        #{classesNumber,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Classes">
+    update classes
+    <set>
+      <if test="classesName != null">
+        classes_name = #{classesName,jdbcType=VARCHAR},
+      </if>
+      <if test="classesStarttime != null">
+        classes_starttime = #{classesStarttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classesEndtime != null">
+        classes_endtime = #{classesEndtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classesCapacity != null">
+        classes_capacity = #{classesCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="classesInclude != null">
+        classes_include = #{classesInclude,jdbcType=INTEGER},
+      </if>
+      <if test="classesStatus != null">
+        classes_status = #{classesStatus,jdbcType=INTEGER},
+      </if>
+      <if test="classesNumber != null">
+        classes_number = #{classesNumber,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where classes_id = #{classesId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Classes">
+    update classes
+    set classes_name = #{classesName,jdbcType=VARCHAR},
+      classes_starttime = #{classesStarttime,jdbcType=TIMESTAMP},
+      classes_endtime = #{classesEndtime,jdbcType=TIMESTAMP},
+      classes_capacity = #{classesCapacity,jdbcType=INTEGER},
+      classes_include = #{classesInclude,jdbcType=INTEGER},
+      classes_status = #{classesStatus,jdbcType=INTEGER},
+      classes_number = #{classesNumber,jdbcType=VARCHAR}
+    where classes_id = #{classesId,jdbcType=INTEGER}
+  </update>
+
+
+<!--        select s.classes_id,s.classes_number,s.classes_name,cp.campus_name,le.lesson_name,s.classes_starttime,s.classes_endtime,s1.staff_name,s2.staff_name,s.classes_status
+-->
+  <!--查询所有班级-->
+  <select id="selectClassesList" resultMap="BaseResultMap">
+    select s.classes_capacity,s.classes_id,s.classes_number,s.classes_name,cp.campus_name,le.lesson_name,s.classes_starttime,s.classes_endtime,s.counselors_staff_id,s.teacher_staff_id,s.classes_status
+    from classes s,campus cp,lesson le,classes_type ct,staff_power spo,staff stf
+    <where>
+      s.campus_id=cp.campus_id
+      AND s.lession_id=le.lesson_id
+      AND s.counselors_staff_id=stf.staff_id
+      AND spo.staff_power_id=stf.staff_power_id
+      AND s.classes_type_id=ct.classes_type_id
+      <if test="classes.campus!=null">
+      <if test="classes.campus.campusId!=null and classes.campus.campusId!=''">
+      AND cp.campus_id=#{classes.campus.campusId}
+      </if>
+      </if>
+
+      <if test="classes.classesStatus!=null">
+      AND s.classes_status=#{classes.classesStatus}
+      </if>
+
+      <if test="classes.lesson!=null">
+      <if test="classes.lesson.lessonId!=null and classes.lesson.lessonId!=''">
+      AND le.lesson_id=#{classes.lesson.lessonId}
+      </if>
+      </if>
+
+      <if test="classes.classesType!=null">
+      <if test="classes.classesType.classesTypeId!=null and classes.classesType.classesTypeId!=''">
+      AND ct.classes_type_id=#{classes.classesType.classesTypeId}
+      </if>
+      </if>
+
+      <if test="classes.classesNumber!=null and classes.classesNumber!=''">
+        AND s.classes_number=#{classes.classesNumber}
+      </if>
+
+      <if test="classes.staff != null">
+        <if test="classes.staff.staffName!=null and classes.staff.staffName!=''">
+          AND  stf.staff_name=#{classes.staff.staffName}
+       </if>
+      </if>
+      ORDER BY s.classes_id LIMIT #{pageCount},#{pageSize}
+    </where>
+  </select>
+
+  <select id="selectTeacher" resultMap="com.love.mapper.StaffMapper.staffMap">
+    SELECT * from staff s,classes c where c.teacher_staff_id=s.staff_id and c.teacher_staff_id=#{teacherStaffId}
+  </select>
+  <select id="selectStaff" resultMap="com.love.mapper.StaffMapper.staffMap">
+  SELECT * from staff s,classes c where c.counselors_staff_id=s.staff_id and c.counselors_staff_id=#{counselorsStaffId}
+  </select>
+<!--更新班级-->
+  <update id="updateClasses" parameterType="Classes">
+    UPDATE classes
+    <trim prefix="set" suffixOverrides=",">
+      <if test="classesName!=null and classesName!=''">
+        classes_name=#{classesName},
+      </if>
+
+      <if test="classesType!=null">
+      <if test="classesType.classesTypeId!=null and classesType.classesTypeId!=''">
+        classes_type_id=#{classesType.classesTypeId},
+      </if>
+      </if>
+
+      <if test="lesson!=null">
+      <if test="lesson.lessonId!=null and lesson.lessonId!=''">
+        lession_id=#{lesson.lessonId},
+      </if>
+      </if>
+
+      <if test="campus!=null">
+      <if test="campus.campusId!=null and campus.campusId!=''">
+        campus_id=#{campus.campusId},
+      </if>
+      </if>
+      <if test="classesStarttime!=null">
+        classes_starttime=#{classesStarttime},
+      </if>
+      <if test="classesEndtime!=null">
+        classes_endtime=#{classesEndtime},
+      </if>
+      <if test="classesCapacity!=null and classesCapacity!=''">
+        classes_capacity=#{classesCapacity},
+      </if>
+      <if test="staff!=null">
+      <if test="staff.staffId!=null and staff.staffId!=''">
+        counselors_staff_id=#{staff.staffId},
+      </if>
+      </if>
+
+      <if test="staffTeacher!=null">
+      <if test="staffTeacher.staffId!=null and staffTeacher.staffId!=''">
+        teacher_staff_id=#{staffTeacher.staffId},
+      </if>
+      </if>
+    </trim>
+    WHERE classes_id=#{classesId}
+  </update>
+
+
+  <!--获取所有体验课的班级总数-->
+  <select id="getWyExperience" resultType="long">
+    select count(*) from classes cl where cl.classes_type_id=1;
+  </select>
+
+  <!--分页查询所有体验课的班级情况-->
+  <select id="getWyExeperienceByPage" resultMap="BaseResultMap">
+    select * from classes cl where cl.classes_type_id=1 limit #{startPos},#{pageSize}
+  </select>
+
+  <!--wy动态查询所有体验课的信息-->
+    <select id="getWyExeperienceClassesAll"  parameterType="com.love.pojo.vg.LessonManageTools"  resultType="map">
+      select cl.classes_number,ca.campus_name,ld.lesson_dtl_name,cl.classes_include,st1.staff_name,cla.classroom_name from classroom cla, classes cl,classes_type ct,lesson le,lesson_detail ld,staff st1, staff st2 ,campus ca where
+				le.lesson_id=ld.lession_id AND cl.teacher_staff_id=st1.staff_id AND cl.counselors_staff_id=st2.staff_id AND cl.lession_id=le.lesson_id AND ct.classes_type_id=cl.classes_type_id
+				AND cl.campus_id=ca.campus_id AND cla.classroom_id=cl.classesroom_id and cl.classes_type_id=2
+				<if test="campusName !=null">
+                  AND ca.campus_name like '%${campusName}%'
+                </if>
+                <if test="lessonDtlName !=null">
+                  AND ld.lesson_dtl_name like '%${lessonDtlName}%'
+                </if>
+                <if test="teacherStaffName !=null">
+                  AND st1.staff_name like '%${teacherStaffName}%'
+                </if>
+  </select>
+
+
+  <!--动态查询所有公开课的信息-->
+  <select id="getWyOpenClassesAll"  parameterType="com.love.pojo.vg.LessonManageTools"  resultType="map">
+    select cl.classes_number,ca.campus_name,ld.lesson_dtl_name,cl.classes_include,st1.staff_name,cla.classroom_name from classroom cla, classes cl,classes_type ct,lesson le,lesson_detail ld,staff st1, staff st2 ,campus ca where
+    le.lesson_id=ld.lession_id AND cl.teacher_staff_id=st1.staff_id AND cl.counselors_staff_id=st2.staff_id AND cl.lession_id=le.lesson_id AND ct.classes_type_id=cl.classes_type_id
+    AND cl.campus_id=ca.campus_id AND cla.classroom_id=cl.classesroom_id and cl.classes_type_id=3
+    <if test="campusName !=null">
+      AND ca.campus_name like '%${campusName}%'
+    </if>
+    <if test="lessonDtlName !=null">
+      AND ld.lesson_dtl_name like '%${lessonDtlName}%'
+    </if>
+    <if test="teacherStaffName !=null">
+      AND st1.staff_name like '%${teacherStaffName}%'
+    </if>
+  </select>
+
+  <!--更新wy体验课的数据-->
+  <update id="updateWyExperience" parameterType="com.love.pojo.vg.LessonUpdateTools">
+    update classes cl,lesson_detail ld
+    <trim prefix="set" suffixOverrides=",">
+      <if test="campusId !=null">
+        cl.campus_id=#{campusId},
+      </if>
+      <if test="lessonDetail !=''">
+        ld.lesson_dtl_name=#{lessonDetail},
+      </if>
+      <if test="classesInclude !=null">
+        cl.classes_include=#{classesInclude},
+      </if>
+      <if test="teacherId !=null">
+        cl.teacher_staff_id=#{teacherId},
+      </if>
+      <if test="classroomId !=null">
+        cl.classesroom_id=#{classroomId},
+      </if>
+    </trim>
+    where cl.classes_number=#{classNumber} and cl.lession_id=ld.lession_id
+  </update>
+
+  <!--wy添加新体验课课程关联的班级-->
+  <insert id="insertWyClasses" parameterType="com.love.pojo.vg.LessonAddTools">
+    INSERT INTO classes (classes_name,classes_starttime,classes_endtime,classes_include,classes_number,counselors_staff_id,lession_id,teacher_staff_id,classes_type_id,classesroom_id,campus_id) VALUES (#{classesName},#{startTime},#{endTime},#{classesInclude},#{classNumber},#{headerTeacherId},#{lessonId},#{teacherId},2,#{classroomId},#{campusId})
+  </insert>
+
+  <!--wy添加新公开课课程关联的班级-->
+  <insert id="insertWyOpenClasses" parameterType="com.love.pojo.vg.LessonAddTools">
+    INSERT INTO classes (classes_name,classes_starttime,classes_endtime,classes_include,classes_number,counselors_staff_id,lession_id,teacher_staff_id,classes_type_id,classesroom_id,campus_id) VALUES (#{classesName},#{startTime},#{endTime},#{classesInclude},#{classNumber},#{headerTeacherId},#{lessonId},#{teacherId},3,#{classroomId},#{campusId})
+  </insert>
+
+  <select id="findCampusByName" parameterType="String" resultType="Campus">
+    select * from campus where campus_name=#{campusName}
+  </select>
+  <select id="findClassesTypeByName" parameterType="String" resultType="ClassesType">
+    select * from classes_type where classes_type=#{classType}
+  </select>
+  <select id="findLessonByName" parameterType="String" resultType="Lesson">
+    select * from lesson where lesson_name=#{lessonName}
+  </select>
+  <select id="findStaffByName" parameterType="String" resultType="Staff">
+    select * from staff where staff_name=#{staffName}
+  </select>
+
+
+  <insert id="insertClass" parameterType="Classes">
+    insert into classes
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="classesName != null and classesName!=''">
+        classes_name,
+      </if>
+
+      <if test="classesType!=null"><if test="classesType.classesTypeId != null and classesType.classesTypeId!=''">
+        classes_type_id,
+      </if>
+      </if>
+
+      <if test="lesson!=null">
+      <if test="lesson.lessonId != null">
+        lession_id,
+      </if>
+      </if>
+      <if test="campus!=null">
+      <if test="campus.campusId != null">
+        campus_id,
+      </if>
+      </if>
+      <if test="classesStarttime != null">
+        classes_starttime,
+      </if>
+      <if test="classesEndtime != null">
+        classes_endtime,
+      </if>
+      <if test="classesCapacity != null and classesCapacity!=''">
+        classes_capacity,
+      </if>
+      <if test="staff!=null">
+      <if test="staff.staffId != null">
+        counselors_staff_id,
+      </if>
+      </if>
+      <if test="staffTeacher">
+      <if test="staffTeacher.staffId != null">
+        teacher_staff_id,
+      </if>
+      </if>
+
+
+
+      <if test="classesStatus!=null">
+        classes_status,
+      </if>
+      <if test="classesNumber!=null and classesNumber!=''">
+        classes_number,
+      </if>
+      <if test="classesInclude!=null and classesInclude!=''">
+        classes_include,
+      </if>
+      <if test="classroom!=null">
+      <if test="classroom.classroomId!=null">
+        classesroom_id,
+      </if>
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="classesName != null">
+        #{classesName},
+      </if>
+      <if test="classesType!=null">
+      <if test="classesType.classesTypeId != null and classesType.classesTypeId!=''">
+        #{classesType.classesTypeId},
+      </if>
+      </if>
+      <if test="lesson!=null">
+      <if test="lesson.lessonId != null">
+        #{lesson.lessonId},
+      </if>
+      </if>
+      <if test="campus!=null">
+      <if test="campus.campusId != null">
+        #{campus.campusId},
+      </if>
+      </if>
+      <if test="classesStarttime != null">
+        #{classesStarttime},
+      </if>
+      <if test="classesEndtime != null">
+        #{classesEndtime},
+      </if>
+      <if test="classesCapacity != null">
+        #{classesCapacity},
+      </if>
+      <if test="staff!=null">
+      <if test="staff.staffId != null">
+        #{staff.staffId},
+      </if>
+      </if>
+      <if test="staffTeacher!=null">
+      <if test="staffTeacher.staffId != null">
+        #{staffTeacher.staffId},
+      </if>
+      </if>
+
+
+      <if test="classesStatus!=null">
+        #{classesStatus},
+      </if>
+      <if test="classesNumber!=null">
+        #{classesNumber},
+      </if>
+      <if test="classesInclude!=null">
+        #{classesInclude},
+      </if>
+      <if test="classroom!=null">
+        <if test="classroom.classroomId!=null">
+          #{classroom.classroomId},
+        </if>
+      </if>
+    </trim>
+  </insert>
+
+<select id="selecClassesByname" resultMap="BaseResultMap" parameterType="String">
+  select * from classes where classes_name=#{classesName}
+</select>
+
+
+  <select id="findClassclassesCapacity" resultType="Integer">
+    select classes.classes_capacity from classes GROUP BY classes.classes_capacity
+  </select>
+  <select id="findclassesInclude" resultType="Integer">
+    SELECT classes.classes_include from classes GROUP BY classes.classes_include
+  </select>
+  <select id="findclassesName" resultType="String">
+  SELECT classes.classes_name from classes
+  </select>
+
+
+
+
+  <select id="findClassStudend" resultMap="BaseResultMap">
+    select c.classes_id,c.classes_number,c.classes_name,c.lession_id,le.lesson_name,c.counselors_staff_id,c.teacher_staff_id,c.classes_capacity,c.classes_include,c.classes_status
+    from classes c,lesson le,staff s
+    <where>
+      c.lession_id=le.lesson_id
+      and c.counselors_staff_id=s.staff_id
+      <if test="classes.classesNumber!=null and classes.classesNumber!=''">
+        and c.classes_number=#{classes.classesNumber}
+      </if>
+
+      <if test="classes.classesName!=null and classes.classesName!=''">
+        and c.classes_name=#{classes.classesName}
+      </if>
+
+      <if test="classes.lesson!=null">
+        <if test="classes.lesson.lessonId!=null and classes.lesson.lessonId!=''">
+          AND c.lession_id=#{classes.lesson.lessonId}
+        </if>
+      </if>
+
+      <if test="classes.staff != null">
+        <if test="classes.staff.staffId!=null and classes.staff.staffId!=''">
+          AND  c.counselors_staff_id=#{classes.staff.staffId}
+        </if>
+      </if>
+
+      <if test="classes.staffTeacher != null">
+        <if test="classes.staffTeacher.staffId!=null and classes.staffTeacher.staffId!=''">
+          AND  c.teacher_staff_id=#{classes.staffTeacher.staffId}
+        </if>
+      </if>
+
+      <if test="classes.classesCapacity!=null and classes.classesCapacity!=''">
+        and c.classes_capacity=#{classes.classesCapacity}
+      </if>
+
+      <if test="classes.classesInclude!=null and classes.classesInclude!=''">
+        and c.classes_include=#{classes.classesInclude}
+      </if>
+
+      <if test="classes.classesStatus!=null">
+        AND c.classes_status=#{classes.classesStatus}
+      </if>
+
+      ORDER BY c.classes_id LIMIT #{pageCount},#{pageSize}
+    </where>
+  </select>
+
+
+  <!--查询条数-->
+  <select id="selectClassesCount" resultType="Integer" parameterType="Classes">
+    select count(s.classes_id)
+    from classes s,campus cp,lesson le,classes_type ct,staff_power spo,staff stf
+    <where>
+      s.campus_id=cp.campus_id
+      AND s.lession_id=le.lesson_id
+      AND s.counselors_staff_id=stf.staff_id
+      AND spo.staff_power_id=stf.staff_power_id
+      AND s.classes_type_id=ct.classes_type_id
+      <if test="campus!=null">
+        <if test="campus.campusId!=null and campus.campusId!=''">
+          AND cp.campus_id=#{campus.campusId}
+        </if>
+      </if>
+
+      <if test="classesStatus!=null">
+        AND s.classes_status=#{classesStatus}
+      </if>
+
+      <if test="lesson!=null">
+        <if test="lesson.lessonId!=null and lesson.lessonId!=''">
+          AND le.lesson_id=#{lesson.lessonId}
+        </if>
+      </if>
+
+      <if test="classesType!=null">
+        <if test="classesType.classesTypeId!=null and classesType.classesTypeId!=''">
+          AND ct.classes_type_id=#{classesType.classesTypeId}
+        </if>
+      </if>
+
+      <if test="classesNumber!=null and classesNumber!=''">
+        AND s.classes_number=#{classesNumber}
+      </if>
+
+      <if test="staff != null">
+        <if test="staff.staffName!=null and staff.staffName!=''">
+          AND  stf.staff_name=#{staff.staffName}
+        </if>
+      </if>
+    </where>
+  </select>
+
+
+  <!--查询条数  班级学员管理-->
+  <select id="selectClassStudentCount" parameterType="Classes" resultType="Integer">
+    SELECT count(c.classes_id)    from classes c,lesson le,staff s
+    <where>
+      c.lession_id=le.lesson_id
+      and c.counselors_staff_id=s.staff_id
+      <if test="classesNumber!=null and classesNumber!=''">
+        and c.classes_number=#{classesNumbe}
+      </if>
+
+      <if test="classesName!=null and classesName!=''">
+        and c.classes_name=#{classesName}
+      </if>
+
+      <if test="lesson!=null">
+        <if test="lesson.lessonId!=null and lesson.lessonId!=''">
+          AND c.lession_id=#{lesson.lessonId}
+        </if>
+      </if>
+
+      <if test="staff != null">
+        <if test="staff.staffId!=null and staff.staffId!=''">
+          AND  c.counselors_staff_id=#{staff.staffId}
+        </if>
+      </if>
+
+      <if test="staffTeacher != null">
+        <if test="staffTeacher.staffId!=null and staffTeacher.staffId!=''">
+          AND  c.teacher_staff_id=#{staffTeacher.staffId}
+        </if>
+      </if>
+
+      <if test="classesCapacity!=null and classesCapacity!=''">
+        and c.classes_capacity=#{classesCapacity}
+      </if>
+
+      <if test="classesInclude!=null and classesInclude!=''">
+        and c.classes_include=#{classesInclude}
+      </if>
+
+      <if test="classesStatus!=null">
+        AND c.classes_status=#{classesStatus}
+      </if>
+    </where>
+  </select>
+
+  <!--去开班-->
+  <update id="startClass" parameterType="Integer">
+    update classes set classes_status=0 WHERE classes_id=#{classesId}
+  </update>
+  <!--去结班-->
+  <update id="finishClass" parameterType="Integer">
+    update classes set classes_status=2 WHERE classes_id=#{classesId}
+  </update>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.StaffPowerMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.StaffPower">
+    <constructor>
+      <idArg column="staff_power_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="staff_power_detail" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="staffPowerMap" type="staffPower">
+    <id column="staff_power_id" property="staffPowerId"></id>
+    <result column="staff_power_detail" property="staffPowerDetail"></result>
+  </resultMap>
+  <sql id="Base_Column_List">
+    staff_power_id, staff_power_detail
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from staff_power
+    where staff_power_id = #{staffPowerId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from staff_power
+    where staff_power_id = #{staffPowerId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.StaffPower">
+    insert into staff_power (staff_power_id, staff_power_detail)
+    values (#{staffPowerId,jdbcType=INTEGER}, #{staffPowerDetail,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.StaffPower">
+    insert into staff_power
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="staffPowerId != null">
+        staff_power_id,
+      </if>
+      <if test="staffPowerDetail != null">
+        staff_power_detail,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="staffPowerId != null">
+        #{staffPowerId,jdbcType=INTEGER},
+      </if>
+      <if test="staffPowerDetail != null">
+        #{staffPowerDetail,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.StaffPower">
+    update staff_power
+    <set>
+      <if test="staffPowerDetail != null">
+        staff_power_detail = #{staffPowerDetail,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where staff_power_id = #{staffPowerId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.StaffPower">
+    update staff_power
+    set staff_power_detail = #{staffPowerDetail,jdbcType=VARCHAR}
+    where staff_power_id = #{staffPowerId,jdbcType=INTEGER}
+  </update>
+</mapper>

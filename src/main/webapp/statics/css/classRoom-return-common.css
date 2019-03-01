@@ -1,0 +1,73 @@
+
+.container-fluid{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: rgb(245,245,245);
+}
+.top{
+    width: 100%;
+    background-color: white;
+    padding-bottom: 20px;
+}
+.bottom{
+    margin-top: 30px;
+    background-color: white;
+}
+.title{
+    display: inline-block;
+    margin-top: 30px;
+    margin-left: 55px;
+}
+.operate-btn{
+    float: right;
+    margin-top: 20px;
+    margin-right: 55px;
+
+}
+.operate-btn a{
+    height: 38px;
+    margin-right: 10px;
+    padding: 10px;
+}
+.operate-btn a span{
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 12px;
+}
+.blank{
+    height: 40px;
+}
+.content-table{
+    margin-left: 60px;
+    text-align: center;
+}
+th{
+    text-align: center;
+}
+.operate a{
+    height: 30px;
+    margin-right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.operate a span{
+    text-align: center;
+    line-height: 30px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.top-operate{
+    padding-left: 100px;
+}
+.top-operate a{
+    height: 30px;
+    margin-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.top-operate a span{
+    text-align: center;
+    line-height: 30px;
+    font-size: 12px;
+    font-weight: bold;
+}

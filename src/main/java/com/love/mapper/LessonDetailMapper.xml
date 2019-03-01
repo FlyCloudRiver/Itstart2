@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.LessonDetailMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.LessonDetail">
+    <constructor>
+      <idArg column="lesson_dtl_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lesson_dtl_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="lesson_dtl_hour" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+
+
+  <resultMap id="lessonDetailMap" type="com.love.pojo.LessonDetail">
+    <id column="lesson_dtl_id" property="lessonDtlId"/>
+    <result column="lesson_dtl_name"  property="lessonDtlName"/>
+    <result column="lesson_dtl_hour"  property="lessonDtlHour"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    lesson_dtl_id, lesson_dtl_name, lesson_dtl_hour
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lesson_detail
+    where lesson_dtl_id = #{lessonDtlId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lesson_detail
+    where lesson_dtl_id = #{lessonDtlId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.LessonDetail">
+    insert into lesson_detail (lesson_dtl_id, lesson_dtl_name, lesson_dtl_hour
+      )
+    values (#{lessonDtlId,jdbcType=INTEGER}, #{lessonDtlName,jdbcType=VARCHAR}, #{lessonDtlHour,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.LessonDetail">
+    insert into lesson_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lessonDtlId != null">
+        lesson_dtl_id,
+      </if>
+      <if test="lessonDtlName != null">
+        lesson_dtl_name,
+      </if>
+      <if test="lessonDtlHour != null">
+        lesson_dtl_hour,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lessonDtlId != null">
+        #{lessonDtlId,jdbcType=INTEGER},
+      </if>
+      <if test="lessonDtlName != null">
+        #{lessonDtlName,jdbcType=VARCHAR},
+      </if>
+      <if test="lessonDtlHour != null">
+        #{lessonDtlHour,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.LessonDetail">
+    update lesson_detail
+    <set>
+      <if test="lessonDtlName != null">
+        lesson_dtl_name = #{lessonDtlName,jdbcType=VARCHAR},
+      </if>
+      <if test="lessonDtlHour != null">
+        lesson_dtl_hour = #{lessonDtlHour,jdbcType=INTEGER},
+      </if>
+    </set>
+    where lesson_dtl_id = #{lessonDtlId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.LessonDetail">
+    update lesson_detail
+    set lesson_dtl_name = #{lessonDtlName,jdbcType=VARCHAR},
+      lesson_dtl_hour = #{lessonDtlHour,jdbcType=INTEGER}
+    where lesson_dtl_id = #{lessonDtlId,jdbcType=INTEGER}
+  </update>
+  
+  
+ <!-- wy添加课程详情-->
+  <insert id="insertWyClassesDetal" parameterType="com.love.pojo.LessonDetail">
+    INSERT INTO lesson_detail (lesson_dtl_name,lesson_dtl_hour,lession_id) VALUES(#{lessonDtlName},#{lessonDtlHour},#{lesson.lessonId})
+  </insert>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.InterviewMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Interview">
+    <constructor>
+      <idArg column="interview_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="interview_type" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="interview_context" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="interview_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="interviewMap" type="com.love.pojo.Interview">
+    <id column="interview_id" property="interviewId"/>
+    <result column="interview_type" property="interviewType"/>
+    <result column="interview_context" property="interviewContext"/>
+    <result column="interview_time"  property="interviewTime"/>
+    <association property="client" resultMap="com.love.mapper.ClientMapper.clientMap"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    interview_id, interview_type, interview_context, interview_time
+  </sql>
+
+
+  <!--查询家长访谈列表-->
+  <select id="selectParentInterview" resultMap="interviewMap">
+    select i.interview_id,i.interview_type,i.interview_context,i.interview_time,c.client_linkman,s.staff_name
+    from interview i,client c,staff s,staff_power sp
+    <where>
+          i.client_id=c.client_id
+     and  c.sale_staff_id=s.staff_id
+     and  s.staff_power_id=sp.staff_power_id
+      order by c.client_id
+      limit #{pageStart},#{pageSize}
+    </where>
+  </select>
+
+
+
+  <!--查询家长访谈列表数量-->
+  <select id="getParentInterviewCounts" resultType="Integer">
+    select count(c.client_id)
+    from interview i,client c,staff s,staff_power sp
+    <where>
+      i.client_id=c.client_id
+      and  c.sale_staff_id=s.staff_id
+      and  s.staff_power_id=sp.staff_power_id
+    </where>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from interview
+    where interview_id = #{interviewId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from interview
+    where interview_id = #{interviewId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Interview">
+    insert into interview (interview_id, interview_type, interview_context, 
+      interview_time)
+    values (#{interviewId,jdbcType=INTEGER}, #{interviewType,jdbcType=VARCHAR}, #{interviewContext,jdbcType=VARCHAR}, 
+      #{interviewTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Interview">
+    insert into interview
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="interviewId != null">
+        interview_id,
+      </if>
+      <if test="interviewType != null">
+        interview_type,
+      </if>
+      <if test="interviewContext != null">
+        interview_context,
+      </if>
+      <if test="interviewTime != null">
+        interview_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="interviewId != null">
+        #{interviewId,jdbcType=INTEGER},
+      </if>
+      <if test="interviewType != null">
+        #{interviewType,jdbcType=VARCHAR},
+      </if>
+      <if test="interviewContext != null">
+        #{interviewContext,jdbcType=VARCHAR},
+      </if>
+      <if test="interviewTime != null">
+        #{interviewTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Interview">
+    update interview
+    <set>
+      <if test="interviewType != null">
+        interview_type = #{interviewType,jdbcType=VARCHAR},
+      </if>
+      <if test="interviewContext != null">
+        interview_context = #{interviewContext,jdbcType=VARCHAR},
+      </if>
+      <if test="interviewTime != null">
+        interview_time = #{interviewTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where interview_id = #{interviewId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Interview">
+    update interview
+    set interview_type = #{interviewType,jdbcType=VARCHAR},
+      interview_context = #{interviewContext,jdbcType=VARCHAR},
+      interview_time = #{interviewTime,jdbcType=TIMESTAMP}
+    where interview_id = #{interviewId,jdbcType=INTEGER}
+  </update>
+</mapper>

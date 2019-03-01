@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.StaffMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Staff">
+    <constructor>
+      <idArg column="staff_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="staff_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="staff_number" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="staff_password" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <resultMap id="staffMap" type="Staff">
+    <id column="staff_id" property="staffId"></id>
+    <result column="staff_name" property="staffName"></result>
+    <result column="staff_boss" property="staffBoss"></result>
+    <result column="staff_number" property="staffNumber"></result>
+    <result column="staff_password" property="staffPassword"></result>
+    <association property="staffPower" column="staff_power_id" resultMap="com.love.mapper.StaffPowerMapper.staffPowerMap" ></association>
+    <association property="campus" column="staff_campus_id" resultMap="com.love.mapper.CampusMapper.campusInfoMap"></association>
+  </resultMap>
+  <resultMap id="campusstaffMap" type="Staff">
+    <id column="staff_id" property="staffId"></id>
+    <result column="staff_name" property="staffName"></result>
+    <result column="staff_number" property="staffNumber"></result>
+    <result column="staff_boss" property="staffBoss"></result>
+    <association property="staffPower" column="staff_power_id" resultMap="com.love.mapper.StaffPowerMapper.staffPowerMap" ></association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    staff_id, staff_name, staff_number, staff_password
+  </sql>
+  
+  <!--登录查询-->
+  <select id="login" parameterType="Staff"  resultMap="staffMap">
+    select * from staff s left join (campus c,staff_power sp) on(s.staff_campus_id=campus_id and s.staff_power_id=sp.staff_power_id)  where s.staff_number=#{staffNumber} and s.staff_password=#{staffPassword};
+  </select>
+  <!---->
+  <!--fq获取（校区或全部 以用户权限定）咨询师 -->
+  <select id="getConsultByCampus" parameterType="Staff" resultMap="staffMap">
+    select * from staff s left join (campus c,staff_power sp) on(s.staff_campus_id=campus_id and s.staff_power_id=sp.staff_power_id) where s.staff_power_id=5
+   <choose>
+     <when test="staffPower.staffPowerId=4">
+       and s.staff_power_id=5
+     </when>
+     <when test="(staffPower.staffPowerId=5 and staffBoss=1) or staffPower.staffPowerId=6">
+      and s.staff_power_id=5 and s.staff_campus_id=#{campus.campusId}
+     </when>
+   </choose>
+  </select>
+  <!--结束-->
+  <!--fq获取教务主管-->
+  <select id="findHeadmaster" resultMap="campusstaffMap">
+    select * from staff s left join staff_power st on s.staff_power_id=st.staff_power_id where s.staff_power_id=2 and s.staff_boss=1
+  </select>
+  <!--结束-->
+  <!--fq更新教务主管至校长-->
+  <update id="updateStaff" parameterType="map">
+    update staff set staff_campus_id =#{campusId},staff_power_id=6 where staff_id =#{staffId}
+  </update>
+  <!--结束-->
+  <!--查看校区员工-->
+  <select id="viewStaffs" parameterType="map" resultMap="campusstaffMap">
+    select * from staff s left join staff_power st on s.staff_power_id=st.staff_power_id where s.staff_campus_id=#{campusId}
+  </select>
+  <!--结束-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from staff
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from staff
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Staff">
+    insert into staff (staff_id, staff_name, staff_number, 
+      staff_password)
+    values (#{staffId,jdbcType=INTEGER}, #{staffName,jdbcType=VARCHAR}, #{staffNumber,jdbcType=VARCHAR}, 
+      #{staffPassword,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Staff">
+    insert into staff
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="staffId != null">
+        staff_id,
+      </if>
+      <if test="staffName != null">
+        staff_name,
+      </if>
+      <if test="staffNumber != null">
+        staff_number,
+      </if>
+      <if test="staffPassword != null">
+        staff_password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="staffId != null">
+        #{staffId,jdbcType=INTEGER},
+      </if>
+      <if test="staffName != null">
+        #{staffName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffNumber != null">
+        #{staffNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="staffPassword != null">
+        #{staffPassword,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Staff">
+    update staff
+    <set>
+      <if test="staffName != null">
+        staff_name = #{staffName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffNumber != null">
+        staff_number = #{staffNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="staffPassword != null">
+        staff_password = #{staffPassword,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Staff">
+    update staff
+    set staff_name = #{staffName,jdbcType=VARCHAR},
+      staff_number = #{staffNumber,jdbcType=VARCHAR},
+      staff_password = #{staffPassword,jdbcType=VARCHAR}
+    where staff_id = #{staffId,jdbcType=INTEGER}
+  </update>
+
+
+  <!--wy获取所有的讲师-->
+
+  <select id="getAllWyTeachersName" resultType="map">
+    select s.staff_name,s.staff_id FROM staff s WHERE s.staff_power_id=3
+  </select>
+
+  <!--wy获取所有的班主任-->
+  <select id="getAllWyHeaderTeachersName" resultType="map">
+    select s.staff_name,s.staff_id FROM staff s WHERE s.staff_power_id=2
+  </select>
+
+  <select id="findAllStaff" resultMap="staffMap" >
+    select * from staff st,staff_power sp where st.staff_power_id=sp.staff_power_id and sp.staff_power_id=2
+     </select>
+
+  <select id="findAllLectorr" resultMap="staffMap">
+    select * from staff st,staff_power sp where st.staff_power_id=sp.staff_power_id and sp.staff_power_id=3
+  </select>
+
+  <select id="selectStaffById" parameterType="Integer" resultMap="staffMap">
+    select * from staff where staff_id=#{StaffId}
+  </select>
+
+
+  <select id="selectByName" parameterType="java.lang.String" resultMap="staffMap">
+     select * FROM staff s
+    where s.staff_power_id=5
+     AND s.staff_name=#{name}
+  </select>
+</mapper>

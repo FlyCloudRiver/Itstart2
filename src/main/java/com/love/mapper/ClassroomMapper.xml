@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.ClassroomMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Classroom">
+    <constructor>
+      <idArg column="classroom_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="classroom_capacity" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="classroom_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="classroom_addtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="classroom_state" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="classroomMap" type="com.love.pojo.Classroom">
+    <id property="classroomId" column="classroom_id"></id>
+    <result property="classroomCapacity" column="classroom_capacity"></result>
+    <result property="classroomName" column="classroom_name"></result>
+    <result property="classroomAddtime" column="classroom_addtime"></result>
+    <result property="classroomState" column="classroom_state"></result>
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    classroom_id, classroom_capacity, classroom_name, classroom_addtime, classroom_state
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from classroom
+    where classroom_id = #{classroomId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from classroom
+    where classroom_id = #{classroomId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Classroom">
+    insert into classroom (classroom_id, classroom_capacity, classroom_name, 
+      classroom_addtime, classroom_state)
+    values (#{classroomId,jdbcType=INTEGER}, #{classroomCapacity,jdbcType=INTEGER}, #{classroomName,jdbcType=VARCHAR}, 
+      #{classroomAddtime,jdbcType=TIMESTAMP}, #{classroomState,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Classroom">
+    insert into classroom
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="classroomId != null">
+        classroom_id,
+      </if>
+      <if test="classroomCapacity != null">
+        classroom_capacity,
+      </if>
+      <if test="classroomName != null">
+        classroom_name,
+      </if>
+      <if test="classroomAddtime != null">
+        classroom_addtime,
+      </if>
+      <if test="classroomState != null">
+        classroom_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="classroomId != null">
+        #{classroomId,jdbcType=INTEGER},
+      </if>
+      <if test="classroomCapacity != null">
+        #{classroomCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="classroomName != null">
+        #{classroomName,jdbcType=VARCHAR},
+      </if>
+      <if test="classroomAddtime != null">
+        #{classroomAddtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classroomState != null">
+        #{classroomState,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Classroom">
+    update classroom
+    <set>
+      <if test="classroomCapacity != null">
+        classroom_capacity = #{classroomCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="classroomName != null">
+        classroom_name = #{classroomName,jdbcType=VARCHAR},
+      </if>
+      <if test="classroomAddtime != null">
+        classroom_addtime = #{classroomAddtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="classroomState != null">
+        classroom_state = #{classroomState,jdbcType=INTEGER},
+      </if>
+    </set>
+    where classroom_id = #{classroomId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Classroom">
+    update classroom
+    set classroom_capacity = #{classroomCapacity,jdbcType=INTEGER},
+      classroom_name = #{classroomName,jdbcType=VARCHAR},
+      classroom_addtime = #{classroomAddtime,jdbcType=TIMESTAMP},
+      classroom_state = #{classroomState,jdbcType=INTEGER}
+    where classroom_id = #{classroomId,jdbcType=INTEGER}
+  </update>
+
+  <select id="findAllClassesRoom" resultMap="classroomMap">
+    select * from classroom
+  </select>
+
+  <!--wy获取所有的教室-->
+  <select id="getAllWyClassroom" resultType="map">
+    select cl.classroom_name, cl.classroom_id  from classroom cl where cl.classroom_state=0
+  </select>
+</mapper>

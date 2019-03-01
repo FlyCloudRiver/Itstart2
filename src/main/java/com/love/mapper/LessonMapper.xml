@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.LessonMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Lesson">
+    <constructor>
+      <idArg column="lesson_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lesson_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="lession_level_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lession_price" javaType="java.lang.Float" jdbcType="REAL" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="lessonMap" type="com.love.pojo.Lesson">
+    <id column="lesson_id" property="lessonId"/>
+    <result column="lesson_name" property="lessonName"/>
+    <result column="lession_level_id" property="lessionLevelId"/>
+    <result column="lession_price" property="lessionPrice"/>
+    <association property="lessonLevel" resultMap="com.love.mapper.LessonLevelMapper.lessonLevelMap"/>
+    <collection property="lessonDetailList" resultMap="com.love.mapper.LessonDetailMapper.lessonDetailMap"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    lesson_id, lesson_name, lession_level_id, lession_price
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lesson
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lesson
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </delete>
+
+  <!--wy添加课程-->
+  <insert id="insert" parameterType="com.love.pojo.Lesson">
+
+    <selectKey keyProperty="lessonId" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+
+    insert into lesson (lesson_id, lesson_name, lession_level_id, 
+      lession_price)
+    values (#{lessonId,jdbcType=INTEGER}, #{lessonName,jdbcType=VARCHAR}, #{lessionLevelId,jdbcType=INTEGER}, 
+      #{lessionPrice,jdbcType=REAL})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.love.pojo.Lesson">
+    insert into lesson
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lessonId != null">
+        lesson_id,
+      </if>
+      <if test="lessonName != null">
+        lesson_name,
+      </if>
+      <if test="lessionLevelId != null">
+        lession_level_id,
+      </if>
+      <if test="lessionPrice != null">
+        lession_price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lessonId != null">
+        #{lessonId,jdbcType=INTEGER},
+      </if>
+      <if test="lessonName != null">
+        #{lessonName,jdbcType=VARCHAR},
+      </if>
+      <if test="lessionLevelId != null">
+        #{lessionLevelId,jdbcType=INTEGER},
+      </if>
+      <if test="lessionPrice != null">
+        #{lessionPrice,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Lesson">
+    update lesson
+    <set>
+      <if test="lessonName != null">
+        lesson_name = #{lessonName,jdbcType=VARCHAR},
+      </if>
+      <if test="lessionLevelId != null">
+        lession_level_id = #{lessionLevelId,jdbcType=INTEGER},
+      </if>
+      <if test="lessionPrice != null">
+        lession_price = #{lessionPrice,jdbcType=REAL},
+      </if>
+    </set>
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Lesson">
+    update lesson
+    set lesson_name = #{lessonName,jdbcType=VARCHAR},
+      lession_level_id = #{lessionLevelId,jdbcType=INTEGER},
+      lession_price = #{lessionPrice,jdbcType=REAL}
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectLessonName" resultMap="lessonMap">
+    select * from lesson;
+  </select>
+</mapper>

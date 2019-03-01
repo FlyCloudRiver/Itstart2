@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.ClientSourceMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.ClientSource">
+    <constructor>
+      <idArg column="client_source_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_source" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    client_source_id, client_source
+  </sql>
+
+  <resultMap id="clientSourceMap" type="ClientSource">
+      <id property="clientSourceId" column="client_source_id"></id>
+      <result property="clientSource" column="client_source"></result>
+  </resultMap>
+
+
+  <!--信息分配 查询所有来源信息-->
+  <select id="selectAll" resultMap="clientSourceMap">
+    select  <include refid="Base_Column_List" /> from client_source
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from client_source
+    where client_source_id = #{clientSourceId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from client_source
+    where client_source_id = #{clientSourceId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.ClientSource">
+    insert into client_source (client_source_id, client_source)
+    values (#{clientSourceId,jdbcType=INTEGER}, #{clientSource,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.ClientSource">
+    insert into client_source
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="clientSourceId != null">
+        client_source_id,
+      </if>
+      <if test="clientSource != null">
+        client_source,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="clientSourceId != null">
+        #{clientSourceId,jdbcType=INTEGER},
+      </if>
+      <if test="clientSource != null">
+        #{clientSource,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.ClientSource">
+    update client_source
+    <set>
+      <if test="clientSource != null">
+        client_source = #{clientSource,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where client_source_id = #{clientSourceId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.ClientSource">
+    update client_source
+    set client_source = #{clientSource,jdbcType=VARCHAR}
+    where client_source_id = #{clientSourceId,jdbcType=INTEGER}
+  </update>
+
+  <!--liulei-->
+  <select id="selectAllClientSource" resultMap="BaseResultMap">
+    select * from client_source;
+  </select>
+</mapper>

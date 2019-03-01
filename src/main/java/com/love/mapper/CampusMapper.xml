@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.CampusMapper">
+
+  <resultMap id="BaseResultMap" type="com.love.pojo.Campus">
+    <constructor>
+
+      <idArg column="campus_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="campus_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="campus_number" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="campus_add_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="campus_update_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="campus_status" javaType="java.lang.Integer" jdbcType="BIT" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="campusMap" type="Campus">
+
+      <id property="campusId" column="campus_id"></id>
+      <result column="campus_name" property="campusName"></result>
+      <result column="campus_number" property="campusNumber"></result>
+      <result column="campus_add_time" property="campusAddTime"></result>
+      <result column="campus_update_time" property="campusUpdateTime"></result>
+      <result column="campus_status" property="campusStatus"></result>
+  </resultMap>
+  <sql id="Base_Column_List">
+    campus_id, campus_name, campus_number, campus_add_time, campus_update_time, campus_status
+  </sql>
+  <resultMap id="campusInfoMap" type="Campus">
+    <id property="campusId" column="campus_id"></id>
+    <result column="campus_name" property="campusName"></result>
+    <result column="campus_number" property="campusNumber"></result>
+    <result column="campus_add_time" property="campusAddTime"></result>
+    <result column="campus_update_time" property="campusUpdateTime"></result>
+    <result column="campus_status" property="campusStatus"></result>
+    <collection property="campusStaffs" ofType="Staff" resultMap="com.love.mapper.StaffMapper.campusstaffMap"></collection>
+  </resultMap>
+
+  <!--查询所有campus-->
+  <select id="selectAll" resultMap="campusInfoMap">
+    select * from campus
+  </select>
+<!---->
+  <!--校名模糊查询-->
+  <select id="searchCampusByName"  resultMap="campusInfoMap">
+     select * from campus
+    <where>
+      <if test="campusName != null or campusName !=''">
+        campus_name like '%${campusName}%'
+      </if>
+    </where>
+  </select>
+  <!---->
+  <!--fq校名模糊查询 分页条数-->
+  <select id="count"  resultType="int" parameterType="BaseQo">
+    select count(*) from campus
+    <where>
+      <if test="qo.campusName != null and qo.campusName !='' and qo.campusName !='null'">
+        campus_name like '%${qo.campusName}%'
+      </if>
+    </where>
+
+  </select>
+  <!--结束-->
+  <!--fq校名查询-->
+  <select id="searchCampus"  resultMap="campusInfoMap" parameterType="BaseQo">
+   select * from campus LEFT JOIN staff ON staff.staff_campus_id=campus.campus_id
+   where  campus.campus_id in (SELECT c.campus_id from (SELECT campus_id from campus
+   <where >
+     <if test="qo.campusName!=null and qo.campusName!='' and qo.campusName !='null'">
+       campus_name like '%${qo.campusName}%'
+     </if>
+   </where>
+   LIMIT #{currindex},#{rows}) as c)
+
+  </select>
+  <!--结束-->
+  <!--fq添加校区-->
+  <insert id="addCampus" parameterType="Campus">
+    insert into campus (campus_number,campus_name,campus_add_time,campus_status,campus_update_time) values (#{campusNumber},#{campusName},#{campusAddTime},#{campusStatus},#{campusUpdateTime})
+  </insert>
+  <!--结束-->
+  <!--fq更新校区-->
+  <update id="updateCampus" parameterType="map" >
+    update campus set campus_name=#{campusName} ,campus_update_time=#{campusUpdateTime} where campus_id=#{campusId}
+  </update>
+  <!--结束-->
+  <!--fq开通校区-->
+  <update id="openCampus" parameterType="map">
+    update campus set campus_status=1 where campus_id=#{campusId}
+  </update>
+  <!---->
+  <!--fq 查找校区-->
+  <select id="findCampusById" parameterType="map" resultMap="campusInfoMap">
+    select * from campus LEFT JOIN staff ON staff.staff_campus_id=campus.campus_id  where campus.campus_id=#{campusId}
+  </select>
+  <!--fq 删除校区-->
+  <delete id="deleteCampus" parameterType="Campus">
+    delete from campus where campus_id=#{campusId}
+  </delete>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from campus
+    where campus_id = #{campusId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from campus
+    where campus_id = #{campusId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Campus">
+    insert into campus (campus_id, campus_name, campus_number, 
+      campus_add_time, campus_update_time, campus_status
+      )
+    values (#{campusId,jdbcType=INTEGER}, #{campusName,jdbcType=VARCHAR}, #{campusNumber,jdbcType=VARCHAR}, 
+      #{campusAddTime,jdbcType=TIMESTAMP}, #{campusUpdateTime,jdbcType=TIMESTAMP}, #{campusStatus,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Campus">
+    insert into campus
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="campusId != null">
+        campus_id,
+      </if>
+      <if test="campusName != null">
+        campus_name,
+      </if>
+      <if test="campusNumber != null">
+        campus_number,
+      </if>
+      <if test="campusAddTime != null">
+        campus_add_time,
+      </if>
+      <if test="campusUpdateTime != null">
+        campus_update_time,
+      </if>
+      <if test="campusStatus != null">
+        campus_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="campusId != null">
+        #{campusId,jdbcType=INTEGER},
+      </if>
+      <if test="campusName != null">
+        #{campusName,jdbcType=VARCHAR},
+      </if>
+      <if test="campusNumber != null">
+        #{campusNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="campusAddTime != null">
+        #{campusAddTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="campusUpdateTime != null">
+        #{campusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="campusStatus != null">
+        #{campusStatus,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Campus">
+    update campus
+    <set>
+      <if test="campusName != null">
+        campus_name = #{campusName,jdbcType=VARCHAR},
+      </if>
+      <if test="campusNumber != null">
+        campus_number = #{campusNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="campusAddTime != null">
+        campus_add_time = #{campusAddTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="campusUpdateTime != null">
+        campus_update_time = #{campusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="campusStatus != null">
+        campus_status = #{campusStatus,jdbcType=BIT},
+      </if>
+    </set>
+    where campus_id = #{campusId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Campus">
+    update campus
+    set campus_name = #{campusName,jdbcType=VARCHAR},
+      campus_number = #{campusNumber,jdbcType=VARCHAR},
+      campus_add_time = #{campusAddTime,jdbcType=TIMESTAMP},
+      campus_update_time = #{campusUpdateTime,jdbcType=TIMESTAMP},
+      campus_status = #{campusStatus,jdbcType=BIT}
+    where campus_id = #{campusId,jdbcType=INTEGER}
+  </update>
+
+</mapper>

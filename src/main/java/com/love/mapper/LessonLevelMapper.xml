@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.LessonLevelMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.LessonLevel">
+    <constructor>
+      <idArg column="lesson_level_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lesson_level_school" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lesson_level_type" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="lesson_level_grade" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="lessonLevelMap" type="com.love.pojo.LessonLevel">
+    <id column="lesson_level_id" property="lessonLevelId"/>
+    <result column="lesson_level_school" property="lessonLevelSchool"/>
+    <result column="lesson_level_type" property="lessonLevelType"/>
+    <result column="lesson_level_grade"  property="lessonLevelGrade"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    lesson_level_id, lesson_level_school, lesson_level_type, lesson_level_grade
+  </sql>
+
+
+
+    <!--获取课程年级列表-->
+    <select id="getLessonLevelGrade"  resultMap="lessonLevelMap">
+        select ll.lesson_level_grade
+        from lesson_level ll
+        <where>
+                <if test="lessonLevelSchool!=null">
+                    ll.lesson_level_school=#{lessonLevelSchool}
+                </if>
+            GROUP BY ll.lesson_level_grade
+        </where>
+ </select>
+
+
+
+    <!--获取课程分类列表-->
+    <select id="getLessonLevelType"  resultMap="lessonLevelMap">
+        select ll.lesson_level_type
+        from lesson_level ll
+        <where>
+            <if test="lessonLevelGrade!=null">
+                ll.lesson_level_grade=#{lessonLevelGrade}
+            </if>
+            GROUP BY ll.lesson_level_type
+        </where>
+    </select>
+
+
+
+
+
+
+
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lesson_level
+    where lesson_level_id = #{lessonLevelId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lesson_level
+    where lesson_level_id = #{lessonLevelId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.LessonLevel">
+    insert into lesson_level (lesson_level_id, lesson_level_school, 
+      lesson_level_type, lesson_level_grade)
+    values (#{lessonLevelId,jdbcType=INTEGER}, #{lessonLevelSchool,jdbcType=INTEGER}, 
+      #{lessonLevelType,jdbcType=INTEGER}, #{lessonLevelGrade,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.LessonLevel">
+    insert into lesson_level
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lessonLevelId != null">
+        lesson_level_id,
+      </if>
+      <if test="lessonLevelSchool != null">
+        lesson_level_school,
+      </if>
+      <if test="lessonLevelType != null">
+        lesson_level_type,
+      </if>
+      <if test="lessonLevelGrade != null">
+        lesson_level_grade,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lessonLevelId != null">
+        #{lessonLevelId,jdbcType=INTEGER},
+      </if>
+      <if test="lessonLevelSchool != null">
+        #{lessonLevelSchool,jdbcType=INTEGER},
+      </if>
+      <if test="lessonLevelType != null">
+        #{lessonLevelType,jdbcType=INTEGER},
+      </if>
+      <if test="lessonLevelGrade != null">
+        #{lessonLevelGrade,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.LessonLevel">
+    update lesson_level
+    <set>
+      <if test="lessonLevelSchool != null">
+        lesson_level_school = #{lessonLevelSchool,jdbcType=INTEGER},
+      </if>
+      <if test="lessonLevelType != null">
+        lesson_level_type = #{lessonLevelType,jdbcType=INTEGER},
+      </if>
+      <if test="lessonLevelGrade != null">
+        lesson_level_grade = #{lessonLevelGrade,jdbcType=INTEGER},
+      </if>
+    </set>
+    where lesson_level_id = #{lessonLevelId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.LessonLevel">
+    update lesson_level
+    set lesson_level_school = #{lessonLevelSchool,jdbcType=INTEGER},
+      lesson_level_type = #{lessonLevelType,jdbcType=INTEGER},
+      lesson_level_grade = #{lessonLevelGrade,jdbcType=INTEGER}
+    where lesson_level_id = #{lessonLevelId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.ClientMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.Client">
+    <constructor>
+      <idArg column="client_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_tel" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_status" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_linkman" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_address" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_gender" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_linkman_tel" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_number" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_grade" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="client_state" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_pursure" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_visited_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="client_distribute_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="client_interview_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="client_track" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="client_addtime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+
+     <resultMap id="clientMap" type="com.love.pojo.Client">
+       <id column="client_id" property="clientId"></id>
+       <result column="client_name" property="clientName"/>
+       <result column="client_tel" property="clientTel"/>
+       <result column="client_status" property="clientStatus"/>
+       <result column="client_linkman" property="clientLinkman"/>
+       <result column="client_address" property="clientAddress"/>
+       <result column="client_gender" property="clientGender"/>
+       <result column="client_linkman_tel" property="clientLinkmanTel"/>
+       <result column="client_number" property="clientNumber"/>
+       <result column="client_grade" property="clientGrade"/>
+       <result column="client_state" property="clientState"/>
+       <result column="client_pursure" property="clientPursure"/>
+       <result column="client_visited_time" property="clientVisitedTime"/>
+       <result column="client_distribute_time" property="clientDistributeTime"/>
+       <result column="client_interview_time" property="clientInterviewTime"/>
+       <result column="client_track" property="clientTrack"/>
+       <result column="client_addtime" property="clientAddtime"/>
+       <association property="classes" resultMap="com.love.mapper.ClassesMapper.BaseResultMap" />
+       <association property="saleStaff" resultMap="com.love.mapper.StaffMapper.staffMap"/>
+     </resultMap>
+
+  <sql id="Base_Column_List">
+    client_id, client_name, client_tel, client_status, client_linkman, client_address,
+    client_gender, client_linkman_tel, client_number, client_grade, client_state, client_pursure,
+    client_visited_time, client_distribute_time, client_interview_time, client_track,
+    client_addtime
+  </sql>
+
+  <resultMap id="clientDistributeMap" type="Client">
+    <id property="clientId" column="client_id"></id>
+    <result property="clientName" column="client_name"></result>
+    <result property="clientTel" column="client_tel"></result>
+    <result property="clientAddtime" column="client_addtime"></result>
+    <result property="clientNumber" column="client_number"></result>
+    <result property="clientGender" column="client_gender"></result>
+    <association property="campus" column="campus_id" resultMap="com.love.mapper.CampusMapper.campusInfoMap"></association>
+    <association property="clientSource" column="client_source_id" resultMap="com.love.mapper.ClientSourceMapper.clientSourceMap"></association>
+    <association property="saleStaff" column="sale_staff_id" resultMap="com.love.mapper.StaffMapper.staffMap"></association>
+    <association property="staffs" resultMap="com.love.mapper.StaffMapper.staffMap"></association>
+  </resultMap>
+
+
+
+  <!--根据查询条件获取该校区所有异常学生列表-->
+  <select id="selectExceptionStudents"  resultMap="clientMap">
+    select c.client_id,c.client_name,cl.classes_number,l.lesson_name,c.client_pursure,cl.counselors_staff_id,cl.teacher_staff_id,c.client_state
+    from  client c,classes cl,lesson l,staff s,staff_power sp
+    <where>
+      c.classes_id=cl.classes_id
+      and cl.lession_id=l.lesson_id
+      and  s.staff_power_id=sp.staff_power_id
+      and  cl.counselors_staff_id=s.staff_id
+      <if test="client.classes!=null">
+          <if test="client.classes.staff!=null">
+            <if test="client.classes.staff.staffName!=null and client.classes.staff.staffName!=''">
+              and  s.staff_name like  "%"#{client.classes.staff.staffName}"%"
+           </if>
+          </if>
+      </if>
+      <if test="client.clientName!=null and client.clientName!=''">
+        and  c.client_name like  "%"#{client.clientName}"%"
+      </if>
+      <if test="client.clientState!=null">
+        and  c.client_state=#{client.clientState}
+      </if>
+      order by c.client_id
+        limit #{pageStart},#{pageSize}
+
+    </where>
+  </select>
+
+  <!--根据查询条件获取该校区所有异常学生列表总数-->
+  <select id="getExceptionStudentsCounts"   resultType="Integer">
+    select count(client_id)
+    from  client c,classes cl,lesson l,staff s,staff_power sp
+    <where>
+      c.classes_id=cl.classes_id
+      and cl.lession_id=l.lesson_id
+      and  s.staff_power_id=sp.staff_power_id
+      and  cl.counselors_staff_id=s.staff_id
+      <if test="classes!=null">
+        <if test="classes.staff!=null">
+          <if test="classes.staff.staffName!=null and classes.staff.staffName!=''">
+            and  s.staff_name like  "%"#{classes.staff.staffName}"%"
+          </if>
+        </if>
+      </if>
+      <if test="clientName!=null and clientName!=''">
+        and  c.client_name like  "%"#{clientName}"%"
+      </if>
+      <if test="clientState!=null">
+        and  c.client_state=#{clientState}
+      </if>
+    </where>
+
+  </select>
+
+
+
+  <!---->
+  <!--fq信息分配 根据权限查询 校区或全部 线下客户 -->
+  <select id="getClientByEmaple" resultMap="clientDistributeMap" parameterType="map">
+    select * from client c left join (client_source cs,campus,staff) on (c.client_source_id=cs.client_source_id and campus.campus_id=c.campus_id and staff.staff_id=c.sale_staff_id) where c.client_state=0
+    <choose>
+      <when test="staff.staffPower.staffPowerId = 4">
+        <if test="client.qo.clientName != null and client.qo.clientName != ''">
+          and c.client_name like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.clientTel != null and client.qo.clientTel != ''">
+          and c.client_tel like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.campus != null and client.qo.campus.campusName !=''">
+          and c.campus_id =#{client.qo.campus.campusId}
+        </if>
+        <if test="client.qo.clientSource != null and client.qo.clientSource.clientSource !=''">
+          and c.client_source_id=#{client.qo.clientSource.clientSourceId}
+        </if>
+      </when>
+      <when test="(staff.staffPower.staffPowerId = 5 and staff.staffBoss = 1) or staff.staffPower.staffPowerId = 6">
+
+        <if test="client.qo.clientName != null and client.qo.clientName != ''">
+          and c.client_name like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.clientTel != null and client.qo.clientTel != ''">
+          and c.client_tel like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.campus != null and client.qo.campus.campusName !=''" >
+          and c.campus_id =#{client.qo.campus.campusId}
+        </if>
+        <if test="client.qo.clientSource != null and client.qo.clientSource.clientSource !=''">
+          and c.client_source_id=#{client.qo.clientSource.clientSourceId}
+        </if>
+
+      </when>
+    </choose>
+    limit #{client.currindex},#{client.rows}
+  </select>
+  <!--结束-->
+  <!--fq 信息分配：查询客户分页-->
+  <select id="count" resultType="int" parameterType="map">
+    select count(*) from client c left join (client_source cs,campus,staff) on (c.client_source_id=cs.client_source_id and campus.campus_id=c.campus_id and staff.staff_id=c.sale_staff_id) where c.client_state=0
+    <choose>
+      <when test="staff.staffPower.staffPowerId = 4">
+        <if test="client.qo.clientName != null and client.qo.clientName != ''">
+          and c.client_name like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.clientTel != null and client.qo.clientTel != ''">
+          and c.client_tel like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.campus != null and client.qo.campus.campusName !=''">
+          and c.campus_id =#{client.qo.campus.campusId}
+        </if>
+        <if test="client.qo.clientSource != null and client.qo.clientSource.clientSource !=''">
+          and c.client_source_id=#{client.qo.clientSource.clientSourceId}
+        </if>
+      </when>
+      <when test="(staff.staffPower.staffPowerId = 5 and staff.staffBoss = 1) or staff.staffPower.staffPowerId = 6">
+
+        <if test="client.qo.clientName != null and client.qo.clientName != ''">
+          and c.client_name like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.clientTel != null and client.qo.clientTel != ''">
+          and c.client_tel like '%${client.qo.clientName}%'
+        </if>
+        <if test="client.qo.campus != null and client.qo.campus.campusName !=''" >
+          and c.campus_id =#{client.qo.campus.campusId}
+        </if>
+        <if test="client.qo.clientSource != null and client.qo.clientSource.clientSource !=''">
+          and c.client_source_id=#{client.qo.clientSource.clientSourceId}
+        </if>
+
+      </when>
+    </choose>
+  </select>
+  <!--结束-->
+  <!--fq信息分配：客户分配-->
+  <update id="updateClient" >
+    update client set client_distribute_time=#{distributeTime} ,hr_staff_id=#{staffId,jdbcType=INTEGER},client_state=9 where client_id in
+    <foreach collection="ids" item="clientId" index="index"
+           open="(" close=")"  separator=",">
+      #{clientId}
+    </foreach>
+
+  </update>
+  <!--结束-->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from client
+    where client_id = #{clientId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from client
+    where client_id = #{clientId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.Client">
+    insert into client (client_id, client_name, client_tel, 
+      client_status, client_linkman, client_address, 
+      client_gender, client_linkman_tel, client_number, 
+      client_grade, client_state, client_pursure, 
+      client_visited_time, client_distribute_time, 
+      client_interview_time, client_track, client_addtime
+      )
+    values (#{clientId,jdbcType=INTEGER}, #{clientName,jdbcType=VARCHAR}, #{clientTel,jdbcType=VARCHAR}, 
+      #{clientStatus,jdbcType=INTEGER}, #{clientLinkman,jdbcType=VARCHAR}, #{clientAddress,jdbcType=VARCHAR}, 
+      #{clientGender,jdbcType=VARCHAR}, #{clientLinkmanTel,jdbcType=VARCHAR}, #{clientNumber,jdbcType=VARCHAR}, 
+      #{clientGrade,jdbcType=VARCHAR}, #{clientState,jdbcType=INTEGER}, #{clientPursure,jdbcType=INTEGER}, 
+      #{clientVisitedTime,jdbcType=TIMESTAMP}, #{clientDistributeTime,jdbcType=TIMESTAMP}, 
+      #{clientInterviewTime,jdbcType=TIMESTAMP}, #{clientTrack,jdbcType=INTEGER}, #{clientAddtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.Client">
+    insert into client
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="clientId != null">
+        client_id,
+      </if>
+      <if test="clientName != null">
+        client_name,
+      </if>
+      <if test="clientTel != null">
+        client_tel,
+      </if>
+      <if test="clientStatus != null">
+        client_status,
+      </if>
+      <if test="clientLinkman != null">
+        client_linkman,
+      </if>
+      <if test="clientAddress != null">
+        client_address,
+      </if>
+      <if test="clientGender != null">
+        client_gender,
+      </if>
+      <if test="clientLinkmanTel != null">
+        client_linkman_tel,
+      </if>
+      <if test="clientNumber != null">
+        client_number,
+      </if>
+      <if test="clientGrade != null">
+        client_grade,
+      </if>
+      <if test="clientState != null">
+        client_state,
+      </if>
+      <if test="clientPursure != null">
+        client_pursure,
+      </if>
+      <if test="clientVisitedTime != null">
+        client_visited_time,
+      </if>
+      <if test="clientDistributeTime != null">
+        client_distribute_time,
+      </if>
+      <if test="clientInterviewTime != null">
+        client_interview_time,
+      </if>
+      <if test="clientTrack != null">
+        client_track,
+      </if>
+      <if test="clientAddtime != null">
+        client_addtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="clientId != null">
+        #{clientId,jdbcType=INTEGER},
+      </if>
+      <if test="clientName != null">
+        #{clientName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientTel != null">
+        #{clientTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clientStatus != null">
+        #{clientStatus,jdbcType=INTEGER},
+      </if>
+      <if test="clientLinkman != null">
+        #{clientLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="clientAddress != null">
+        #{clientAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="clientGender != null">
+        #{clientGender,jdbcType=VARCHAR},
+      </if>
+      <if test="clientLinkmanTel != null">
+        #{clientLinkmanTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clientNumber != null">
+        #{clientNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="clientGrade != null">
+        #{clientGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="clientState != null">
+        #{clientState,jdbcType=INTEGER},
+      </if>
+      <if test="clientPursure != null">
+        #{clientPursure,jdbcType=INTEGER},
+      </if>
+      <if test="clientVisitedTime != null">
+        #{clientVisitedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientDistributeTime != null">
+        #{clientDistributeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientInterviewTime != null">
+        #{clientInterviewTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientTrack != null">
+        #{clientTrack,jdbcType=INTEGER},
+      </if>
+      <if test="clientAddtime != null">
+        #{clientAddtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.Client">
+    update client
+    <set>
+      <if test="clientName != null">
+        client_name = #{clientName,jdbcType=VARCHAR},
+      </if>
+      <if test="clientTel != null">
+        client_tel = #{clientTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clientStatus != null">
+        client_status = #{clientStatus,jdbcType=INTEGER},
+      </if>
+      <if test="clientLinkman != null">
+        client_linkman = #{clientLinkman,jdbcType=VARCHAR},
+      </if>
+      <if test="clientAddress != null">
+        client_address = #{clientAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="clientGender != null">
+        client_gender = #{clientGender,jdbcType=VARCHAR},
+      </if>
+      <if test="clientLinkmanTel != null">
+        client_linkman_tel = #{clientLinkmanTel,jdbcType=VARCHAR},
+      </if>
+      <if test="clientNumber != null">
+        client_number = #{clientNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="clientGrade != null">
+        client_grade = #{clientGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="clientState != null">
+        client_state = #{clientState,jdbcType=INTEGER},
+      </if>
+      <if test="clientPursure != null">
+        client_pursure = #{clientPursure,jdbcType=INTEGER},
+      </if>
+      <if test="clientVisitedTime != null">
+        client_visited_time = #{clientVisitedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientDistributeTime != null">
+        client_distribute_time = #{clientDistributeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientInterviewTime != null">
+        client_interview_time = #{clientInterviewTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientTrack != null">
+        client_track = #{clientTrack,jdbcType=INTEGER},
+      </if>
+      <if test="clientAddtime != null">
+        client_addtime = #{clientAddtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where client_id = #{clientId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.Client">
+    update client
+    set client_name = #{clientName,jdbcType=VARCHAR},
+      client_tel = #{clientTel,jdbcType=VARCHAR},
+      client_status = #{clientStatus,jdbcType=INTEGER},
+      client_linkman = #{clientLinkman,jdbcType=VARCHAR},
+      client_address = #{clientAddress,jdbcType=VARCHAR},
+      client_gender = #{clientGender,jdbcType=VARCHAR},
+      client_linkman_tel = #{clientLinkmanTel,jdbcType=VARCHAR},
+      client_number = #{clientNumber,jdbcType=VARCHAR},
+      client_grade = #{clientGrade,jdbcType=VARCHAR},
+      client_state = #{clientState,jdbcType=INTEGER},
+      client_pursure = #{clientPursure,jdbcType=INTEGER},
+      client_visited_time = #{clientVisitedTime,jdbcType=TIMESTAMP},
+      client_distribute_time = #{clientDistributeTime,jdbcType=TIMESTAMP},
+      client_interview_time = #{clientInterviewTime,jdbcType=TIMESTAMP},
+      client_track = #{clientTrack,jdbcType=INTEGER},
+      client_addtime = #{clientAddtime,jdbcType=TIMESTAMP}
+    where client_id = #{clientId,jdbcType=INTEGER}
+  </update>
+
+  <!--liulei-->
+  <select id="selectAllGrade" resultMap="clientMap">
+    select * from client c GROUP BY c.client_grade;
+  </select>
+
+  <select id="selectAllClientStatus" resultMap="clientMap">
+    select * from client c GROUP  BY c.client_status
+  </select>
+
+  <select id="selectAllClientState" resultMap="clientMap">
+    select * from client c GROUP  BY c.client_state
+  </select>
+
+  <select id="selectAllClientTrack" resultMap="clientMap">
+    select * from client c GROUP  BY c.client_track
+  </select>
+
+  <select id="selectByCondition" resultMap="clientMap">
+    select client_id,client_number,client_name,client_gender,client_distribute_time,client_visited_time,client_interview_time, client_addtime,client_state
+    from client c
+    <where>
+      <if test="clientSource !=null">
+        and c.client_source_id=#{clientSource.clientSourceId}
+      </if>
+      <if test="clientGrade !=null and clientGrade!=''">
+        and c.client_grade=#{clientGrade}
+      </if>
+      <if test="clientStatus !=null">
+        and c.client_status=#{clientStatus}
+      </if>
+      <if test="clientState !=null">
+        and c.client_state=#{clientState}
+      </if>
+      <if test="clientName!=null">
+        and c.client_name LIKE '%${clientName}%'
+      </if>
+      <if test="staffs.staffId !=null">
+        and c.hr_staff_id=#{staffs.staffId }
+      </if>
+      <if test="clientTrack !=null">
+        and c.client_track=#{clientTrack}
+      </if>
+    </where>
+  </select>
+  <!--修改数据-->
+  <update id="updateClientData" parameterType="Client">
+        update client set client_name=#{clientName},client_gender=#{clientGender},
+        client_distribute_time=#{clientDistributeTime},client_visited_time=#{clientVisitedTime},
+        client_interview_time=#{clientInterviewTime},client_addtime=#{clientAddtime},
+        client_state=#{clientState} where client_number=#{clientNumber}
+    </update>
+  <!--查询所有数据（分页）-->
+  <!--<select id="selectAll" parameterType="java.lang.Integer" resultMap="clientMap">-->
+        <!--select *from client limit #{start},#{end}-->
+    <!--</select>-->
+  <select id="selectAll" parameterType="java.lang.Integer" resultMap="clientMap">
+        select *from client
+    <!--<where>-->
+      <!--<if test="client.clientSource !=null">-->
+        <!--and c.client_source_id=#{client.clientSource.clientSourceId}-->
+      <!--</if>-->
+      <!--<if test="client.clientGrade !=null and client.clientGrade!=''">-->
+        <!--and c.client_grade=#{client.clientGrade}-->
+      <!--</if>-->
+      <!--<if test="client.clientStatus !=null">-->
+        <!--and c.client_status=#{client.clientStatus}-->
+      <!--</if>-->
+      <!--<if test="client.clientState !=null">-->
+        <!--and c.client_state=#{client.clientState}-->
+      <!--</if>-->
+      <!--<if test="client.clientName!=null">-->
+        <!--and c.client_name LIKE '%${client.clientName}%'-->
+      <!--</if>-->
+      <!--<if test="client.staffs.staffId !=null">-->
+        <!--and c.hr_staff_id=#{client.staffs.staffId }-->
+      <!--</if>-->
+      <!--<if test="client.clientTrack !=null">-->
+        <!--and c.client_track=#{client.clientTrack}-->
+      <!--</if>-->
+    <!--</where>-->
+        limit #{start},#{end}
+    </select>
+  <!--获取数据总的条数-->
+  <select id="selectCount" resultType="java.lang.Integer">
+        select count(client_id) from client
+    </select>
+</mapper>

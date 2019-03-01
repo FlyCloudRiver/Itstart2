@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.love.mapper.ClassesTypeMapper">
+  <resultMap id="BaseResultMap" type="com.love.pojo.ClassesType">
+    <constructor>
+      <idArg column="classes_type_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="classes_type" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="classesTypeMap" type="com.love.pojo.ClassesType">
+    <id property="classesTypeId" column="classes_type_id"></id>
+    <result property="classesType" column="classes_type"></result>
+  </resultMap>
+  <sql id="Base_Column_List">
+    classes_type_id, classes_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from classes_type
+    where classes_type_id = #{classesTypeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from classes_type
+    where classes_type_id = #{classesTypeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.love.pojo.ClassesType">
+    insert into classes_type (classes_type_id, classes_type)
+    values (#{classesTypeId,jdbcType=INTEGER}, #{classesType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.love.pojo.ClassesType">
+    insert into classes_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="classesTypeId != null">
+        classes_type_id,
+      </if>
+      <if test="classesType != null">
+        classes_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="classesTypeId != null">
+        #{classesTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="classesType != null">
+        #{classesType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.love.pojo.ClassesType">
+    update classes_type
+    <set>
+      <if test="classesType != null">
+        classes_type = #{classesType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where classes_type_id = #{classesTypeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.love.pojo.ClassesType">
+    update classes_type
+    set classes_type = #{classesType,jdbcType=VARCHAR}
+    where classes_type_id = #{classesTypeId,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectClassesType" resultMap="classesTypeMap">
+    select * from classes_type
+  </select>
+</mapper>
